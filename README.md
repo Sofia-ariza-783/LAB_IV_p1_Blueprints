@@ -60,26 +60,20 @@ Dado que el diseño es extensible y limpio, la migración hacia una base de dato
 ***
 
 ### 2. Migración a persistencia en PostgreSQL
+- Configura una base de datos PostgreSQL (puedes usar Docker).
+- Implementa un nuevo repositorio `PostgresBlueprintPersistence` que reemplace la versión en memoria.
+- Mantén el contrato de la interfaz `BlueprintPersistence`.
 
-*   Configurar PostgreSQL (recomendado: Docker).
-*   Implementar `PostgresBlueprintPersistence` reemplazando la versión en memoria.
-*   Mantener el contrato definido en `BlueprintPersistence`.
-
-Se utilizó Docker por su facilidad de despliegue. Se generaron los archivos base con:
+Para poder realizar una migracion a PostgresSQL, se decicio utilizar Docker, por la conveniencia y facilidad de implementacion. Para empezar con este proceso, se ejecutacion los comandos iniciales para correr un proyecto de Docker:
 
 ```bash
 docker init
 ```
+Comando con el que se construyeron los archivos base de [Dockerfile](Dockerfile) y [compose.yaml](compose.yaml). Apartir ded estos archivos y la configuracion basica que ofrece el docker compose, se realizaron los cambios para poder correr la base de datos de PostgresSQL. Se agrego en que puertos debia correr la base de datos (5432) y el servicio de springboot (8080) y las configuraciones basicas de autenticacion y seguridad. Dado que esta solo fue una prueba, no se declararon secrets para las credenciales y se usaron valores por defecto.
 
-A partir de esto se configuró el `Dockerfile` y `compose.yaml`, definiendo:
+Una vez configurada la base de datos, se procedio a la implementacion del repositorio `PostgresBlueprintPersistence` que reemplaza la version en memoria. Se mantuvo el contrato de la interfaz `BlueprintPersistence` y se implementaron los metodos necesarios para la persistencia en PostgresSQL. Para poder conectar con la base de datos se creo una interfaz que extendiera de JPARepository.
 
-*   Puerto del contenedor PostgreSQL: **5432**
-*   Puerto del servicio Spring Boot: **8080**
-*   Variables de autenticación básicas (solo para pruebas).
-
-Después se implementó el repositorio `PostgresBlueprintPersistence`, manteniendo la interfaz original y creando un repositorio que extiende `JpaRepository`.
-
-En esta versión no se inicializaron datos por defecto, ya que la persistencia ahora es real y se mantiene entre sesiones.
+No se crearon datos por defecto como la vez anterior, ya que esta vez la persistencia se mantiene entre sesiones y no hace falta simular una persistencia real con la insercion de datos cada vez que arrancaba el servicio.
 
 ![img.png](img.png)
 
