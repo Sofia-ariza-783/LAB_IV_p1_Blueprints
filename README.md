@@ -139,9 +139,20 @@ Se realizaron los cambios necesarios para que las actuales implementaciones de f
 
 ![img_5.png](img_5.png)
 
-***
+---
+## ╰┈➤ °.⭑【▶️】 Pruebas de funcionamiento ┆⤿⌗
 
-## ✅ Entregables
+
+### Swagger-ui
+[Screen Recording 2026-02-18 145551.mp4](Screen%20Recording%202026-02-18%20145551.mp4)
+
+### Docker
+
+![img_7.png](img_7.png)
+
+---
+
+## ╰┈➤ °.⭑【▶✅】 Entregables ┆⤿⌗
 
 1.  Repositorio GitHub con:
     *   Código actualizado
@@ -156,7 +167,8 @@ Se realizaron los cambios necesarios para que las actuales implementaciones de f
 
 ***
 
-## 📊 Criterios de evaluación
+## ╰┈➤ °.⭑【📊】 Criterios de evaluación ┆⤿⌗
+
 
 | Criterio                         | Peso |
 | -------------------------------- | ---- |
