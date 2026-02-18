@@ -11,11 +11,11 @@ import java.util.Set;
 
 @Repository
 @Primary
-public class BlueprintPersistenceRepository implements BlueprintPersistence {
+public class PostgresBlueprintPersistence implements BlueprintPersistence {
 
     private final PersistentBlueprintRepository repo;
 
-    public BlueprintPersistenceRepository(PersistentBlueprintRepository repo) {
+    public PostgresBlueprintPersistence(PersistentBlueprintRepository repo) {
         this.repo = repo;
     }
 
