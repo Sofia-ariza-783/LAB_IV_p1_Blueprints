@@ -18,7 +18,7 @@ Para ejecutar el proyecto, asegúrate de tener **Docker Desktop instalado y en e
 ```bash
 mvn clean install
 docker compose up --build
-````
+```
 
 > Si deseas activar filtros de puntos (reducción de redundancia, *undersampling*, etc.), implementa nuevas clases que extiendan `BlueprintsFilter` y reemplaza `IdentityFilter` mediante `@Primary` o configuraciones de Spring.
 
@@ -86,34 +86,29 @@ En esta versión no se inicializaron datos por defecto, ya que la persistencia a
 ***
 
 ### 3. Buenas prácticas de API REST
+- Cambia el path base de los controladores a `/api/v1/blueprints`.
+- Usa **códigos HTTP** correctos:
+    - `200 OK` (consultas exitosas).
+    - `201 Created` (creación).
+    - `202 Accepted` (actualizaciones).
+    - `400 Bad Request` (datos inválidos).
+    - `404 Not Found` (recurso inexistente).
+- Implementa una clase genérica de respuesta uniforme:
+  ```java
+  public record ApiResponse<T>(int code, String message, T data) {}
+  ```
+  Ejemplo JSON:
+  ```json
+  {
+    "code": 200,
+    "message": "execute ok",
+    "data": { "author": "john", "name": "house", "points": [...] }
+  }
+  ```
 
-*   Actualización del path base a `/api/v1/blueprints`.
-*   Uso correcto de códigos HTTP:
-    *   **200 OK**
-    *   **201 Created**
-    *   **202 Accepted**
-    *   **400 Bad Request**
-    *   **404 Not Found**
-*   Implementación de una respuesta uniforme (`ApiResponse<T>`).
+La actualización del path base, se realizo directamente en el controlador, cuando se define el PathMapping. Modificando todos los paths de los endpoints actuales, y los que se podrian generar a futuro.
 
-Ejemplo del modelo:
-
-```java
-public record ApiResponse<T>(int code, String message, T data) {}
-```
-
-Ejemplo JSON:
-
-```json
-{
-  "code": 200,
-  "message": "execute ok",
-  "data": { "author": "john", "name": "house", "points": [...] }
-}
-```
-
-Se creó la clase `ApiResponseFormated` para manejar códigos HTTP y mensajes estandarizados. Se agregaron `try-catch` en el controlador para retornar respuestas adecuadas y mensajes correctos según cada operación.
-
+Para la implementacion de los codigos y de la respuesta uniforme, se implemento la clase `ApiResponseFormated` que se encarga de la creacion de la respuesta y el manejo de los codigos HTTP indicados (No utilizamos el nombre recomendado porque interferia con una de las anotaciones de documentacion). Se implementaron try-catch para manejar los errores y devolver la respuesta correcta segun correspondiera (400 0 404). Para cada uno de los endpoints se especifico cual tipo de mensaje de verificacion correcta debia enviar (200, 201, 202).
 ***
 
 ### 4. OpenAPI / Swagger
@@ -122,7 +117,7 @@ Se creó la clase `ApiResponseFormated` para manejar códigos HTTP y mensajes es
 *   Documentación accesible en `/swagger-ui.html`.
 *   Anotación de endpoints con `@Operation` y `@ApiResponse`.
 
-Estas anotaciones permiten que Swagger muestre información detallada de cada endpoint, su método, respuesta esperada y códigos HTTP.
+Para mejorar la documentación, se utilizó la anotación @Operation y @ApiResponse para cada endpoint, especificando el path, el método, el código de respuesta y la respuesta esperada. De esta forma al abrir swagger-ui y navegar a /v3/api-docs podemos ver en cada endpoint la documentación correspondiente.
 
 ![img_1.png](img_1.png)
 
@@ -131,20 +126,12 @@ Estas anotaciones permiten que Swagger muestre información detallada de cada en
 ***
 
 ### 5. Filtros de *Blueprints*
+- Implementa filtros:
+    - **RedundancyFilter**: elimina puntos duplicados consecutivos.
+    - **UndersamplingFilter**: conserva 1 de cada 2 puntos.
+- Activa los filtros mediante perfiles de Spring (`redundancy`, `undersampling`).
 
-Filtros implementados:
-
-*   **RedundancyFilter**: elimina puntos consecutivos duplicados.
-*   **UndersamplingFilter**: conserva uno de cada dos puntos.
-
-Se configuraron perfiles de Spring (`redundancy`, `undersampling`).  
-El filtro por defecto (`IdentityFilter`) incluye:
-
-```java
-@Profile("!redundancy && !undersampling")
-```
-
-Ejemplo de funcionamiento:
+Se realizaron los cambios necesarios para que las actuales implementaciones de filtros funcionen correctamente. Se agregó al filtro base "Identity Filter" la notación de @Profile ("!redundancy && !undersampling") para que solo se aplique cuando ninguno de los otros perfiles esté activo. Y en la configuración de la aplicación se definió qué filtro activar para diferentes pruebas, como se muestran a continuación:
 
 #### Get original
 
